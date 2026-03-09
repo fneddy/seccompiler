@@ -1,6 +1,5 @@
 // Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0 OR BSD-3-Clause
-#![cfg(any(target_endian = "little", target_arch = "s390x"))]
 //! Provides easy-to-use Linux seccomp-bpf jailing.
 //!
 //! Seccomp is a Linux kernel security feature which enables a tight control over what kernel-level
