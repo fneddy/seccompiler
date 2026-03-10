@@ -25,10 +25,11 @@ fn check_getpid_fails() {
 /// Test seccomp's TSYNC functionality, which syncs the current filter to all threads in the
 /// process.
 fn test_tsync() {
+    unsafe { *libc::__errno_location() = 0; }
     // These channels will block on send until the receiver has called recv.
     let (setup_tx, setup_rx) = sync_channel::<()>(0);
     let (finish_tx, finish_rx) = sync_channel::<()>(0);
-
+    
     // first check getpid is working
     let pid = unsafe { libc::getpid() };
     let errno = std::io::Error::last_os_error().raw_os_error().unwrap();
@@ -39,6 +40,7 @@ fn test_tsync() {
     // create two threads, one which applies the filter to all threads and another which tries
     // to call getpid.
     let seccomp_thread = thread::spawn(move || {
+        unsafe { *libc::__errno_location() = 0; }
         let rules = vec![(libc::SYS_getpid, vec![])];
 
         let rule_map: BTreeMap<i64, Vec<SeccompRule>> = rules.into_iter().collect();
@@ -68,6 +70,7 @@ fn test_tsync() {
     });
 
     let test_thread = thread::spawn(move || {
+        unsafe { *libc::__errno_location() = 0; }
         // wait until seccomp setup is done
         setup_rx.recv().unwrap();
 
